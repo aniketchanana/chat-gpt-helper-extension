@@ -2,6 +2,9 @@ const API_END_POINT = "https://api.openai.com/v1/completions";
 
 const getQueryResult = async (query, OPEN_AI_KEY) => {
   return new Promise(async (resolve, reject) => {
+    // return setTimeout(() => {
+    //   resolve(query);
+    // }, 3000);
     try {
       if (!OPEN_AI_KEY) {
         throw new Error("Invalid key");

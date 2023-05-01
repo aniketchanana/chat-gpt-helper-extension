@@ -45,6 +45,28 @@ const getTextContentFromDOMElements = (node, textarea = false) => {
   }
 };
 
+const addLoadingIcon = (inputTargetElement) => {
+  if (!inputTargetElement) {
+    return null;
+  }
+  const loaderDiv = document.querySelector("#loader--helper-extension-id");
+  const coordinates = inputTargetElement.getBoundingClientRect();
+  const loadingDiv = loaderDiv || document.createElement("div");
+  loadingDiv.style.position = "fixed";
+  loadingDiv.style.left = `${coordinates.x + coordinates.width - 30}px`;
+  loadingDiv.style.top = `${coordinates.y + coordinates.height - 30}px`;
+  loadingDiv.setAttribute("class", "loader--helper-extension");
+  loadingDiv.setAttribute("id", "loader--helper-extension-id");
+  document.querySelector("body").appendChild(loadingDiv);
+};
+
+const removeLoaderIcon = () => {
+  const loaderDiv = document.querySelector("#loader--helper-extension-id");
+  if (loaderDiv) {
+    loaderDiv.parentElement.removeChild(loaderDiv);
+  }
+};
+
 window.addEventListener(
   "keypress",
   debounce((e) => {
@@ -58,23 +80,27 @@ window.addEventListener(
     } else {
       query = getTextContentFromDOMElements(inputTargetElement, false);
     }
+
     if (!query) {
       return;
     }
 
-    updateElement(inputTargetElement, "Loading your content please wait...");
+    const previousOpacity = inputTargetElement.style.opacity;
+    inputTargetElement.style.opacity = "0.5";
+    addLoadingIcon(inputTargetElement);
     getFromLocalStorage(OPEN_AI)
       .then((result) => {
-        getQueryResult(query, result.openAi)
-          .then((response) => {
-            updateElement(inputTargetElement, response);
-          })
-          .catch(() => {
-            updateElement(inputTargetElement, query);
-          });
+        return getQueryResult(query, result.openAi);
+      })
+      .then((response) => {
+        updateElement(inputTargetElement, response);
       })
       .catch(() => {
-        console.log("::: unable to get key:::");
+        updateElement(inputTargetElement, query);
+      })
+      .finally(() => {
+        removeLoaderIcon();
+        inputTargetElement.style.opacity = previousOpacity;
       });
   })
 );

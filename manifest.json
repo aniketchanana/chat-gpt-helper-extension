@@ -11,12 +11,13 @@
   "action": {
     "default_popup": "popup.html"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "activeTab", "scripting"],
 
   "content_scripts": [
     {
       "js": ["common.js", "content.js"],
-      "matches": ["*://*/*"]
+      "matches": ["*://*/*"],
+      "css": ["loading.css"]
     }
   ]
 }
