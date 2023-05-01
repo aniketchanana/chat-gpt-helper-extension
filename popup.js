@@ -1,5 +1,10 @@
 const saveButton = document.querySelector("#save_btn");
 const input = document.querySelector("#key_input");
+const getQueryButton = document.querySelector("#getQueryButton");
+const queryTextarea = document.querySelector("textarea");
+const queryReply = document.querySelector("#queryReply");
+const queryReplyContainer = document.querySelector("#queryReplyContainer");
+const copyAnswer = document.querySelector("#copyAnswer");
 const OPEN_AI = "openAi";
 
 const saveToLocalStorage = async (key, value) => {
@@ -24,4 +29,25 @@ const getFromLocalStorage = async (key) => {
 saveButton.addEventListener("click", () => {
   const inputValue = input.value;
   saveToLocalStorage(OPEN_AI, inputValue);
+});
+
+getQueryButton.addEventListener("click", () => {
+  const query = queryTextarea.value;
+  if (!query || queryReply.textContent === "Loading...") {
+    queryReplyContainer.setAttribute("style", "display: none;");
+    return;
+  }
+  queryReplyContainer.setAttribute("style", "display: block;");
+  queryReply.textContent = "Loading...";
+  getQueryResult(query, input.value).then((res) => {
+    queryReply.textContent = res;
+  });
+});
+
+copyAnswer.addEventListener("click", () => {
+  navigator.clipboard.writeText(queryReply.textContent);
+  copyAnswer.textContent = "Copied!!";
+  setTimeout(() => {
+    copyAnswer.textContent = "Copy";
+  }, 1000);
 });

@@ -5,9 +5,21 @@
   </head>
   <body>
     <div class="container">
-      <input placeholder="Enter your open.ai key here" id="key_input" />
+      <input
+        placeholder="Enter your open.ai key here"
+        id="key_input"
+        type="password"
+      />
       <button id="save_btn">Save key</button>
+      <textarea placeholder="Enter your query here..."></textarea>
+
+      <button id="getQueryButton">Get result</button>
+      <div id="queryReplyContainer">
+        <div id="queryReply"></div>
+        <button id="copyAnswer">Copy</button>
+      </div>
     </div>
   </body>
+  <script src="./common.js"></script>
   <script src="./popup.js"></script>
 </html>

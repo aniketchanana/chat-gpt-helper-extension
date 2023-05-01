@@ -2,7 +2,6 @@ console.log("This is content script");
 const TRIGGER_START = "helper:";
 const TRIGGER_END = ";";
 const OPEN_AI = "openAi";
-const API_END_POINT = "https://api.openai.com/v1/completions";
 
 const getFromLocalStorage = async (key) => {
   return chrome.storage.local.get([key]);
@@ -31,44 +30,6 @@ const debounce = (callback, delay = 200) => {
       OPEN_AI_KEY = "";
     });
 })();
-
-const getQueryResult = async (query) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      myHeaders.append("Authorization", `Bearer ${OPEN_AI_KEY}`);
-
-      const raw = JSON.stringify({
-        model: "text-davinci-003",
-        prompt: query,
-        max_tokens: 2048,
-        temperature: 0,
-        top_p: 1,
-        n: 1,
-        stream: false,
-        logprobs: null,
-      });
-
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      };
-
-      let response = await fetch(API_END_POINT, requestOptions);
-      response = await response.json();
-      const { choices } = response;
-
-      // remove the spaces from the response text
-      const text = choices[0].text.replace(/^\s+|\s+$/g, "");
-      resolve(text);
-    } catch (e) {
-      console.log(":::i am unable to parse query:::");
-    }
-  });
-};
 
 const updateElement = (inputTargetElement, value) => {
   if (
@@ -114,7 +75,7 @@ window.addEventListener(
     }
 
     updateElement(inputTargetElement, "Loading your content please wait...");
-    getQueryResult(query)
+    getQueryResult(query, OPEN_AI_KEY)
       .then((response) => {
         updateElement(inputTargetElement, response);
       })
