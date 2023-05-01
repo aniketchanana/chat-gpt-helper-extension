@@ -19,14 +19,18 @@ const debounce = (callback, delay = 200) => {
   };
 };
 
-const updateElement = (inputTargetElement, value) => {
+const updateElement = (inputTargetElement, value, success = false) => {
+  const updatedValue = success
+    ? inputTargetElement.textContent.replace(/helper:(.*?)\;/gi, value)
+    : value;
+
   if (
     inputTargetElement instanceof HTMLInputElement ||
     inputTargetElement instanceof HTMLTextAreaElement
   ) {
-    inputTargetElement.value = value;
+    inputTargetElement.value = updatedValue;
   } else {
-    inputTargetElement.textContent = value;
+    inputTargetElement.textContent = updatedValue;
   }
 };
 
@@ -93,7 +97,7 @@ window.addEventListener(
         return getQueryResult(query, result.openAi);
       })
       .then((response) => {
-        updateElement(inputTargetElement, response);
+        updateElement(inputTargetElement, response, true);
       })
       .catch(() => {
         updateElement(inputTargetElement, query);
