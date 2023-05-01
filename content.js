@@ -7,8 +7,6 @@ const getFromLocalStorage = async (key) => {
   return chrome.storage.local.get([key]);
 };
 
-let OPEN_AI_KEY = "";
-
 const debounce = (callback, delay = 200) => {
   let timerOutId = null;
   return (...args) => {
@@ -20,16 +18,6 @@ const debounce = (callback, delay = 200) => {
     }, delay);
   };
 };
-// on initial load
-(() => {
-  getFromLocalStorage(OPEN_AI)
-    .then((result) => {
-      OPEN_AI_KEY = result.openAi;
-    })
-    .catch(() => {
-      OPEN_AI_KEY = "";
-    });
-})();
 
 const updateElement = (inputTargetElement, value) => {
   if (
@@ -75,12 +63,18 @@ window.addEventListener(
     }
 
     updateElement(inputTargetElement, "Loading your content please wait...");
-    getQueryResult(query, OPEN_AI_KEY)
-      .then((response) => {
-        updateElement(inputTargetElement, response);
+    getFromLocalStorage(OPEN_AI)
+      .then((result) => {
+        getQueryResult(query, result.openAi)
+          .then((response) => {
+            updateElement(inputTargetElement, response);
+          })
+          .catch(() => {
+            updateElement(inputTargetElement, query);
+          });
       })
       .catch(() => {
-        updateElement(inputTargetElement, query);
+        console.log("::: unable to get key:::");
       });
   })
 );

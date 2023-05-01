@@ -3,6 +3,9 @@ const API_END_POINT = "https://api.openai.com/v1/completions";
 const getQueryResult = async (query, OPEN_AI_KEY) => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (!OPEN_AI_KEY) {
+        throw new Error("Invalid key");
+      }
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       myHeaders.append("Authorization", `Bearer ${OPEN_AI_KEY}`);
